@@ -1,0 +1,9 @@
+POST http://localhost:8080/event
+Content-Type: application/json
+
+{
+"name":"zs",
+"description":"create a event",
+"location":"dublin",
+"datetime":"2026-02-16T15:04:05Z"
+}
