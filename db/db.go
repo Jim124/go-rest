@@ -7,17 +7,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+var DB *sql.DB
 
 func InitDb() {
 	var error error
-	db, error = sql.Open("mysql", "root:aA1243690.@tcp(localhost:3306)/go_rest?parseTime=true")
+	DB, error = sql.Open("mysql", "root:aA1243690.@tcp(localhost:3306)/go_rest?parseTime=true")
 	if error != nil {
 		panic(error)
 	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
+	DB.SetConnMaxLifetime(time.Minute * 3)
+	DB.SetMaxOpenConns(10)
+	DB.SetMaxIdleConns(10)
 	createTable()
 }
 
@@ -33,7 +33,7 @@ func createTable() {
 	)
 	`
 
-	_, err := db.Exec(createEventsTable)
+	_, err := DB.Exec(createEventsTable)
 
 	if err != nil {
 		panic("Could not create events table.")
