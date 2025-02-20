@@ -15,8 +15,6 @@ type Event struct {
 	UserID      int64
 }
 
-var events []Event
-
 func (e *Event) Save() error {
 	insertSql := `insert into events(name,description,location,date_time,user_id)values(?,?,?,?,?)`
 	stmt, error := db.DB.Prepare(insertSql)
@@ -78,4 +76,15 @@ func (e Event) UpdateEvent() error {
 		return error
 	}
 	return nil
+}
+
+func (e Event) DeleteEvent() error {
+	deleteQuery := `delete from events where id=?`
+	stmt, error := db.DB.Prepare(deleteQuery)
+	if error != nil {
+		return error
+	}
+	defer stmt.Close()
+	_, error = stmt.Exec(e.ID)
+	return error
 }

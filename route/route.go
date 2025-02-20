@@ -8,4 +8,7 @@ func RegisterServer(server *gin.Engine) {
 	server.GET("/queryEvent", getEventQuery)
 	server.POST("/event", createEvent)
 	server.PUT("/events/:id", updateEvent)
+	server.DELETE("/events/:id", deleteEvent)
+	server.POST("/signUp", createUser)
+	server.POST("/login", login)
 }
