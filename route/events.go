@@ -2,9 +2,11 @@ package route
 
 import (
 	"go-rest/models"
+	"go-rest/utils"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,15 +21,27 @@ func getEvents(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
+	bearerToken := context.Request.Header.Get("Authorization")
+
+	if bearerToken == "" {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
+		return
+	}
+	token := strings.Split(bearerToken, " ")[1]
+	userId, error := utils.ValidToken(token)
+	if error != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
+		return
+	}
 	var event models.Event
-	error := context.ShouldBindBodyWithJSON(&event)
+	error = context.ShouldBindBodyWithJSON(&event)
 
 	if error != nil {
 		log.Fatal(error)
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse data"})
 		return
 	}
-	event.UserID = 1
+	event.UserID = userId
 	error = event.Save()
 	if error != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event, Try again later"})
