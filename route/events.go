@@ -1,12 +1,11 @@
 package route
 
 import (
+	"fmt"
 	"go-rest/models"
-	"go-rest/utils"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,20 +20,11 @@ func getEvents(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
-	bearerToken := context.Request.Header.Get("Authorization")
 
-	if bearerToken == "" {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
-		return
-	}
-	token := strings.Split(bearerToken, " ")[1]
-	userId, error := utils.ValidToken(token)
-	if error != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
-		return
-	}
+	userId := context.GetInt64("userId")
+	fmt.Println(userId)
 	var event models.Event
-	error = context.ShouldBindBodyWithJSON(&event)
+	error := context.ShouldBindBodyWithJSON(&event)
 
 	if error != nil {
 		log.Fatal(error)
@@ -72,14 +62,20 @@ func getEventQuery(context *gin.Context) {
 }
 
 func updateEvent(context *gin.Context) {
+	userId := context.GetInt64("userId")
 	id, error := strconv.ParseInt(context.Param("id"), 10, 64)
 	if error != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse value"})
 		return
 	}
-	_, error = models.GetEventById(id)
+	queryEvent, error := models.GetEventById(id)
 	if error != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not fetch event"})
+		return
+	}
+
+	if queryEvent.UserID != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to update event"})
 		return
 	}
 	var event models.Event
@@ -98,6 +94,7 @@ func updateEvent(context *gin.Context) {
 }
 
 func deleteEvent(context *gin.Context) {
+	userId := context.GetInt64("userId")
 	id, error := strconv.ParseInt(context.Param("id"), 10, 64)
 	if error != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse the id"})
@@ -106,6 +103,10 @@ func deleteEvent(context *gin.Context) {
 	event, error := models.GetEventById(id)
 	if error != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not fetch event"})
+		return
+	}
+	if event.UserID != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to delete event"})
 		return
 	}
 	error = event.DeleteEvent()
