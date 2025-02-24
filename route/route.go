@@ -8,7 +8,7 @@ import (
 
 func RegisterServer(server *gin.Engine) {
 	server.GET("/events", getEvents)
-	server.GET("/events/:id", getEventById)
+	server.GET("/events/:id", middlewares.GetPathId, getEventById)
 	server.GET("/queryEvent", getEventQuery)
 	authRouter := server.Group("/auth")
 	// use middleware
@@ -16,8 +16,8 @@ func RegisterServer(server *gin.Engine) {
 	authRouter.POST("/event", createEvent)
 	authRouter.PUT("/events/:id", updateEvent)
 	authRouter.DELETE("/events/:id", deleteEvent)
-	authRouter.POST("/events/:id/register", registerForEvent)
-	authRouter.DELETE("/events/:id/cancel", cancelRegister)
+	authRouter.POST("/events/:id/register", middlewares.GetPathId, registerForEvent)
+	authRouter.DELETE("/events/:id/cancel", middlewares.GetPathId, cancelRegister)
 	server.POST("/signUp", createUser)
 	server.POST("/login", login)
 }

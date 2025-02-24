@@ -41,11 +41,8 @@ func createEvent(context *gin.Context) {
 }
 
 func getEventById(context *gin.Context) {
-	id, error := strconv.ParseInt(context.Param("id"), 10, 64)
-	if error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "could not get id from url"})
-		return
-	}
+	id := context.GetInt64("eventId")
+
 	event, error := models.GetEventById(id)
 	if error != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not get event by id"})
