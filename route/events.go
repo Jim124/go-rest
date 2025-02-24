@@ -1,7 +1,6 @@
 package route
 
 import (
-	"fmt"
 	"go-rest/models"
 	"log"
 	"net/http"
@@ -22,7 +21,6 @@ func getEvents(context *gin.Context) {
 func createEvent(context *gin.Context) {
 
 	userId := context.GetInt64("userId")
-	fmt.Println(userId)
 	var event models.Event
 	error := context.ShouldBindBodyWithJSON(&event)
 
@@ -37,6 +35,7 @@ func createEvent(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event, Try again later"})
 		return
 	}
+
 	context.JSON(http.StatusOK, event)
 
 }
@@ -115,5 +114,4 @@ func deleteEvent(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, gin.H{"message": "delete event successfully"})
-
 }

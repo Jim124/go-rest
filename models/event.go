@@ -88,3 +88,25 @@ func (e Event) DeleteEvent() error {
 	_, error = stmt.Exec(e.ID)
 	return error
 }
+
+func (e Event) Register(userId int64) error {
+	insertSql := `insert into registers(event_id,user_id) values(?,?)`
+	stmt, error := db.DB.Prepare(insertSql)
+	if error != nil {
+		return error
+	}
+	defer stmt.Close()
+	_, error = stmt.Exec(e.ID, userId)
+	return error
+}
+
+func (e Event) Cancel(userId int64) error {
+	deleteSql := `delete from registers where event_id=? and user_id = ?`
+	stmt, error := db.DB.Prepare(deleteSql)
+	if error != nil {
+		return error
+	}
+	defer stmt.Close()
+	_, error = stmt.Exec(e.ID, userId)
+	return error
+}
