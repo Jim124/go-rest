@@ -13,7 +13,7 @@ var DB *sql.DB
 func InitDb() {
 	var error error
 	// DB, error = sql.Open("mysql", "root:aA1243690.@tcp(localhost:3306)/go_rest?parseTime=true")
-	DB, error = sql.Open("mysql", "root:root@tcp(localhost:3306)/go_rest?parseTime=true")
+	DB, error = sql.Open("mysql", "root:root@tcp(mysql8)/go_rest?parseTime=true")
 	if error != nil {
 		panic(error)
 	}
