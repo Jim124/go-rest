@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,10 +11,12 @@ import (
 
 var DB *sql.DB
 
-func InitDb() {
+func InitDb(user, password, db_host, db string) {
+	mysql_url := fmt.Sprintf("%v:%v@tcp(%v)/%v?parseTime=true", user, password, db_host, db)
 	var error error
 	// DB, error = sql.Open("mysql", "root:aA1243690.@tcp(localhost:3306)/go_rest?parseTime=true")
-	DB, error = sql.Open("mysql", "root:root@tcp(mysql8)/go_rest?parseTime=true")
+	// DB, error = sql.Open("mysql", "root:root123@tcp(localhost:3306)/go_rest?parseTime=true")
+	DB, error = sql.Open("mysql", mysql_url)
 	if error != nil {
 		panic(error)
 	}
